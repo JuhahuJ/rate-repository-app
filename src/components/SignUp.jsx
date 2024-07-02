@@ -3,7 +3,7 @@ import { useFormik } from 'formik'
 import * as yup from 'yup'
 import Text from './Text'
 import theme from '../theme'
-import useSignIn from '../hooks/useSignIn'
+import useSignUp from '../hooks/useSignUp'
 import { useNavigate } from 'react-router-native'
 
 const styles = StyleSheet.create({
@@ -39,18 +39,27 @@ const styles = StyleSheet.create({
 const initialValues = {
   username: '',
   password: '',
+  passwordConfirmation: '',
 }
 
 const validationSchema = yup.object().shape({
   username: yup
     .string()
-    .required('Username is required'),
+    .required('Username is required')
+    .min(5, 'Username must be at least 5 characters long')
+    .max(30, 'Username must be at maximum 30 characters long'),
   password: yup
     .string()
-    .required('Password is required'),
+    .required('Password is required')
+    .min(5, 'Password must be at least 5 characters long')
+    .max(30, 'Password must be at maximum 30 characters long'),
+    passwordConfirmation: yup
+    .string()
+    .required('Password confirmation is required')
+    .oneOf([yup.ref('password'), null], 'Password confirmation must match password'),
 })
 
-export const SignInForm = ({ onSubmit }) => {
+export const SignUpForm = ({ onSubmit }) => {
   const formik = useFormik({
     initialValues,
     validationSchema,
@@ -80,21 +89,32 @@ export const SignInForm = ({ onSubmit }) => {
       {formik.touched.password && formik.errors.password && (
         <Text style={{ color: '#d73a4a' }}>{formik.errors.password}</Text>
       )}
+      <TextInput
+        style={[styles.input, formik.touched.passwordConfirmation && formik.errors.passwordConfirmation && styles.inputError]}
+        placeholder="Password confirmation"
+        onChangeText={formik.handleChange('passwordConfirmation')}
+        value={formik.values.passwordConfirmation}
+        secureTextEntry
+        autoCapitalize="none"
+      />
+      {formik.touched.passwordConfirmation && formik.errors.passwordConfirmation && (
+        <Text style={{ color: '#d73a4a' }}>{formik.errors.passwordConfirmation}</Text>
+      )}
       <Pressable style={styles.button} onPress={formik.handleSubmit}>
-        <Text style={styles.buttonText}>Sign In</Text>
+        <Text style={styles.buttonText}>Sign up</Text>
       </Pressable>
     </View>
   )
 }
 
-const SignIn = () => {
-  const [signIn] = useSignIn()
+const SignUp = () => {
+  const [create] = useSignUp()
 	const navigate = useNavigate()
 
   const onSubmit = async (values) => {
     const { username, password } = values
     try {
-      const {data} = await signIn({ username, password })
+      const {data} = await create({ username, password })
       console.log(data)
       navigate('/')
     } catch (error) {
@@ -102,7 +122,7 @@ const SignIn = () => {
     }
   }
 
-  return <SignInForm onSubmit={onSubmit} />
+  return <SignUpForm onSubmit={onSubmit} />
 }
 
-export default SignIn
+export default SignUp

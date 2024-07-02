@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
     color: theme.colors.textSecondary,
   },
   colorPrimary: {
-    color: theme.colors.textPrimary,
+    color: theme.colors.primary,
   },
   colorWhite: {
     color: 'white',

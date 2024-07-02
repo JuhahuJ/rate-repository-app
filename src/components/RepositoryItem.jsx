@@ -1,6 +1,7 @@
-import { Image, StyleSheet, View } from "react-native"
+import { Image, Pressable, StyleSheet, View } from "react-native"
 import Text from "./Text"
 import theme from "../theme"
+import { useNavigate } from "react-router-native"
 
 const styles = StyleSheet.create({
 	container: {
@@ -26,7 +27,6 @@ const styles = StyleSheet.create({
 		flexShrink: 1,
 		flexWrap: 'wrap',
 		paddingBottom: 7,
-		color: 'gray',
 	},
 	blueBackground: {
 		backgroundColor: theme.colors.primary,
@@ -47,35 +47,41 @@ const formatCount = (count) => {
 	} else return (count / 1000).toFixed(1).replace(/\.0$/, '') + 'k'
 }
 
-const RepositoryItem = ({ item }) => (
-	<View style={{ paddingBottom: 10, borderBottomWidth: 10, borderBottomColor: 'lightgray' }}>
-		<View style={styles.container}>
-			<Image style={styles.avatar} source={{ uri: item.ownerAvatarUrl }} />
-			<View style={styles.info}>
-				<Text fontWeight='bold'>{item.fullName}</Text>
-				<Text style={styles.description}>{item.description}</Text>
-				<Text style={styles.blueBackground}>{item.language}</Text>
-			</View>
+const RepositoryItem = ({ item }) => {
+	navigate = useNavigate()
+
+	return (
+		<View testID="repositoryItem" style={{ paddingBottom: 10, backgroundColor: 'white' }}>
+			<Pressable onPress={() =>navigate(`/${item.id}`)}>
+				<View style={styles.container}>
+					<Image style={styles.avatar} source={{ uri: item.ownerAvatarUrl }} />
+					<View style={styles.info}>
+						<Text fontWeight='bold'>{item.fullName}</Text>
+						<Text color='textSecondary' style={styles.description}>{item.description}</Text>
+						<Text style={styles.blueBackground}>{item.language}</Text>
+					</View>
+				</View>
+				<View style={styles.counts}>
+					<View style={styles.countItem}>
+						<Text >{formatCount(item.stargazersCount)}</Text>
+						<Text color='textSecondary'>Stars</Text>
+					</View>
+					<View style={styles.countItem}>
+						<Text >{formatCount(item.forksCount)}</Text>
+						<Text color='textSecondary'>Forks</Text>
+					</View>
+					<View style={styles.countItem}>
+						<Text >{formatCount(item.reviewCount)}</Text>
+						<Text color='textSecondary'>Reviews</Text>
+					</View>
+					<View style={styles.countItem}>
+						<Text >{formatCount(item.ratingAverage)}</Text>
+						<Text color='textSecondary'>Rating</Text>
+					</View>
+				</View>
+			</Pressable>
 		</View>
-		<View style={styles.counts}>
-			<View style={styles.countItem}>
-				<Text >{formatCount(item.stargazersCount)}</Text>
-				<Text style={{color: 'gray'}}>Stars</Text>
-			</View>
-			<View style={styles.countItem}>
-				<Text >{formatCount(item.forksCount)}</Text>
-				<Text style={{color: 'gray'}}>Forks</Text>
-			</View>
-			<View style={styles.countItem}>
-				<Text >{formatCount(item.reviewCount)}</Text>
-				<Text style={{color: 'gray'}}>Reviews</Text>
-			</View>
-			<View style={styles.countItem}>
-				<Text >{formatCount(item.ratingAverage)}</Text>
-				<Text style={{color: 'gray'}}>Rating</Text>
-			</View>
-		</View>
-	</View>
-)
+	)
+}
 
 export default RepositoryItem
